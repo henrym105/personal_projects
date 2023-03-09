@@ -3,6 +3,6 @@ Started: March 2023
 
 This analysis will use python to connect to the Spotify and Lyricsgenius APIs. 
 
-My Goal is to track which songs were in the top 50 each month for the past few years, 
+My goal is to track which songs were in the top 50 each month for the past few years, 
 and conduct a positive/negative sentiment analysis on those lyrics to see if there 
 has been any shift over the years. 
