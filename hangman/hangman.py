@@ -5,6 +5,13 @@ import os
 
 
 stages = st.get_stages()
+rip = st.rip()
+
+def clear():
+    # Start by clearing the terminal so it looks nice
+    # os.system('cls')      # uncomment if PC
+    os.system('clear')      # uncomment if Mac
+
 
 def hangman(word):
     wrong = 0
@@ -13,11 +20,11 @@ def hangman(word):
     win = False
     prev_guesses = []
 
-    # Clear the terminal so it looks nice
-    os.system('cls')
+    clear()
+    print("(c) Henry Marquardt, 2023\n")
     print(text2art("Welcome      to"))
-    print(stages[-1])
-    print(text2art("Hangman"))
+    print(st.full())
+    print(text2art("        Hangman"))
 
     print(f"A {len(word)}-letter word has been chosen at random. You have 7 guesses:")
     # print(" ".join(board))
@@ -27,8 +34,10 @@ def hangman(word):
         print(stages[wrong])
         print(f"Used Letters: {', '.join(prev_guesses)}")
         guess = input("Guess a letter: ")
-        
-        os.system('cls')
+        if guess == "quit":
+            break
+
+        os.system('clear')
 
         while guess in prev_guesses:
             print(f"Used Letters: {', '.join(prev_guesses)}")
@@ -52,16 +61,18 @@ def hangman(word):
 
     if win:
         # Print a celebratory message
-        print(text2art("You Win!"))
+        print(text2art("You     Win!"))
         # print(f"The word is {word.upper()}.")
         print()
     else:
-        print(stages[-1])
-        print(text2art("You Lose!"))
+        clear()
+        print(rip)
+        print(text2art("You     Lose!"))
         print(f"The word was {word.upper()}.")
         print()
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
+    clear()
     hangman(words.random_word())
     while input("Press Enter to play again (q to quit): ").lower() != "q":
         hangman(words.random_word())
