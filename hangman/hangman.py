@@ -73,6 +73,6 @@ def hangman(word):
 
 if __name__ == "__main__":    
     clear()
-    hangman(words.random_word())
-    while input("Press Enter to play again (or 'quit'): ").lower() != "quit":
-        hangman(words.random_word())
+    hangman(words.food())
+    while input("\n\nPress Enter to play or type 'quit': ").lower() != "quit":
+        hangman(words.food())
