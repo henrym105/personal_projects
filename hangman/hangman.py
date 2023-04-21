@@ -9,8 +9,8 @@ rip = st.rip()
 
 def clear():
     # Start by clearing the terminal so it looks nice
-    # os.system('cls')      # uncomment if PC
-    os.system('clear')      # uncomment if Mac
+    # os.system('cls')      # uncomment if on windows
+    os.system('clear')      # uncomment if on Mac
 
 
 def hangman(word):

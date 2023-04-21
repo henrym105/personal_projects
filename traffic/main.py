@@ -5,8 +5,14 @@ import imutils
 # cap = cv2.VideoCapture("Commonwealth_traffic.MOV")
 # cap = cv2.VideoCapture("video1.mp4")
 
+# === CHOOSE THE VIDEO YOU WANT TO USE === #
 # input_file = '/Users/Henry/Desktop/personal_projects/traffic/cars.mp4'
-input_file = '/Users/Henry/Desktop/personal_projects/traffic/Commonwealth_traffic.MOV'
+# input_file = '/Users/Henry/Desktop/personal_projects/traffic/Commonwealth_traffic.MOV'
+# input_file = '/Users/Henry/Desktop/personal_projects/traffic/CommAve.mp4'
+# input_file = '/Users/Henry/Desktop/personal_projects/traffic/CommAve30.mp4'
+# input_file = '/Users/Henry/Desktop/personal_projects/traffic/LM_tower2.mp4'
+input_file = '/Users/Henry/Desktop/personal_projects/traffic/video2.mp4'
+
 
 cap = cv2.VideoCapture(input_file)
 # od = object_detection()
