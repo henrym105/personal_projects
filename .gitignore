@@ -2,4 +2,6 @@ tstp
 opencv
 models
 Digit Recognition TensorFlow
+.vscode
+cv_testing_space
 
