@@ -2,28 +2,29 @@ import cv2
 import numpy as np
 
 
-# def find_ball_position(frame):
-#     # Apply any necessary preprocessing steps to enhance the ball's visibility
+def initial_ball_coordinates(frame):
     
-#     # Convert the frame to grayscale for easier processing
-#     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # Apply any necessary preprocessing steps to enhance the ball's visibility
     
-#     # Apply a threshold to segment the ball from the background
-#     _, thresholded = cv2.threshosld(gray_frame, 0, 255, cv2.THRESH_BINARY)
+    # Convert the frame to grayscale for easier processing
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     
-#     # Find contours in the thresholded image
-#     contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # Apply a threshold to segment the ball from the background
+    _, thresholded = cv2.threshosld(gray_frame, 0, 255, cv2.THRESH_BINARY)
     
-#     # Iterate through the contours and find the largest one (assuming it's the ball)
-#     max_contour = max(contours, key=cv2.contourArea)
+    # Find contours in the thresholded image
+    contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-#     # Find the centroid of the largest contour
-#     M = cv2.moments(max_contour)
-#     centroid_x = int(M["m10"] / M["m00"])
-#     centroid_y = int(M["m01"] / M["m00"])
+    # Iterate through the contours and find the largest one (assuming it's the ball)
+    max_contour = max(contours, key=cv2.contourArea)
     
-#     # Return the initial position as a tuple (x, y)
-#     return (centroid_x, centroid_y)
+    # Find the centroid of the largest contour
+    M = cv2.moments(max_contour)
+    centroid_x = int(M["m10"] / M["m00"])
+    centroid_y = int(M["m01"] / M["m00"])
+    
+    # Return the initial position as a tuple (x, y)
+    return (centroid_x, centroid_y)
 
 
 def track_ball(frame, initial_position=None):
