@@ -1,4 +1,8 @@
 def get_stages():
+    """
+    returns a list with string representations of the 
+    """
+    
     noose = """
     ________
     |        |
@@ -82,9 +86,6 @@ def get_stages():
     """
 
     new_stages = [noose, head, leftarm, rightarm, chest, torso, leftleg, rightleg]
-
-    # for i in new_stages:
-    #     print(i)
 
     return new_stages
 
