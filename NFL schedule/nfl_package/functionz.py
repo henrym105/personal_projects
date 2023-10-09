@@ -2,7 +2,12 @@ import random
 import objectz as o
 
 def create_teams():
-    # initialize an object for all 32 NFL Teams
+    """ Initialize an object for all 32 NFL Teams
+
+    Returns:
+        tuple: (all_teams, AFC, NFC)
+    """
+
     # ----------------------------------------------------------------------------------------------------------------------- #
     # ----------------------------------------------------------------------------------------------------------------------- #
     # def create_new_league():
@@ -67,12 +72,11 @@ def create_teams():
         seahawks, rams, cardinals, sf49ers
     ]
 
-    # return nfl_teams
-
     # Create a list of teams in the AFC and NFC
     AFC = [ team for team in nfl_teams if "AFC" in team.conference ]
     NFC = [ team for team in nfl_teams if "NFC" in team.conference ]
     # [team.name for team in AFC]
+
     return nfl_teams, AFC, NFC
 
 def add_game_to_team(home_team, away_team):
