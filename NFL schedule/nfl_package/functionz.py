@@ -77,6 +77,11 @@ def create_teams():
     NFC = [ team for team in nfl_teams if "NFC" in team.conference ]
     # [team.name for team in AFC]
 
+
+    for team in nfl_teams:
+        team.opponents_not_faced = [team for team in nfl_teams]
+
+
     return nfl_teams, AFC, NFC
 
 def add_game_to_team(home_team, away_team):
