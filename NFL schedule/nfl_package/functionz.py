@@ -1,88 +1,66 @@
 import random
-import objectz as o
+from objectz import NFLSchedule, NFLTeam
 
-def create_teams():
-    """ Initialize an object for all 32 NFL Teams
 
-    Returns:
-        tuple: (all_teams, AFC, NFC)
-    """
-
-    # ----------------------------------------------------------------------------------------------------------------------- #
-    # ----------------------------------------------------------------------------------------------------------------------- #
-    # def create_new_league():
+def create_teams() -> list:
+    """ Returns a list of the 32 NFLTeam objects, one for each team"""
 
     # AFC East Teams
-    patriots = o.NFLTeam("New England Patriots", "AFC", "East")
-    bills = o.NFLTeam("Buffalo Bills", "AFC", "East")
-    dolphins = o.NFLTeam("Miami Dolphins", "AFC", "East")
-    jets = o.NFLTeam("New York Jets", "AFC", "East")
+    patriots = NFLTeam("New England", "Patriots", "AFC", "East")
+    bills = NFLTeam("Buffalo", "Bills", "AFC", "East")
+    dolphins = NFLTeam("Miami", "Dolphins", "AFC", "East")
+    jets = NFLTeam("New York", "Jets", "AFC", "East")
 
     # AFC North Teams
-    ravens = o.NFLTeam("Baltimore Ravens", "AFC", "North")
-    steelers = o.NFLTeam("Pittsburgh Steelers", "AFC", "North")
-    browns = o.NFLTeam("Cleveland Browns", "AFC", "North")
-    bengals = o.NFLTeam("Cincinnati Bengals", "AFC", "North")
+    ravens = NFLTeam("Baltimore", "Ravens", "AFC", "North")
+    steelers = NFLTeam("Pittsburgh", "Steelers", "AFC", "North")
+    browns = NFLTeam("Cleveland", "Browns", "AFC", "North")
+    bengals = NFLTeam("Cincinnati", "Bengals", "AFC", "North")
 
     # AFC South Teams
-    texans = o.NFLTeam("Houston Texans", "AFC", "South")
-    colts = o.NFLTeam("Indianapolis Colts", "AFC", "South")
-    titans = o.NFLTeam("Tennessee Titans", "AFC", "South")
-    jaguars = o.NFLTeam("Jacksonville Jaguars", "AFC", "South")
+    texans = NFLTeam("Houston", "Texans", "AFC", "South")
+    colts = NFLTeam("Indianapolis", "Colts", "AFC", "South")
+    titans = NFLTeam("Tennessee", "Titans", "AFC", "South")
+    jaguars = NFLTeam("Jacksonville", "Jaguars", "AFC", "South")
 
     # AFC West Teams
-    chiefs = o.NFLTeam("Kansas City Chiefs", "AFC", "West")
-    broncos = o.NFLTeam("Denver Broncos", "AFC", "West")
-    raiders = o.NFLTeam("Las Vegas Raiders", "AFC", "West")
-    chargers = o.NFLTeam("Los Angeles Chargers", "AFC", "West")
+    chiefs = NFLTeam("Kansas City", "Chiefs", "AFC", "West")
+    broncos = NFLTeam("Denver", "Broncos", "AFC", "West")
+    raiders = NFLTeam("Las Vegas", "Raiders", "AFC", "West")
+    chargers = NFLTeam("Los Angeles", "Chargers", "AFC", "West")
 
     # NFC East Teams
-    cowboys = o.NFLTeam("Dallas Cowboys", "NFC", "East")
-    washington = o.NFLTeam("Washington Football Team", "NFC", "East")
-    eagles = o.NFLTeam("Philadelphia Eagles", "NFC", "East")
-    giants = o.NFLTeam("New York Giants", "NFC", "East")
+    cowboys = NFLTeam("Dallas", "Cowboys", "NFC", "East")
+    washington = NFLTeam("Washington", "Commanders", "NFC", "East")
+    eagles = NFLTeam("Philadelphia", "Eagles", "NFC", "East")
+    giants = NFLTeam("New York", "Giants", "NFC", "East")
 
     # NFC North Teams
-    packers = o.NFLTeam("Green Bay Packers", "NFC", "North")
-    bears = o.NFLTeam("Chicago Bears", "NFC", "North")
-    vikings = o.NFLTeam("Minnesota Vikings", "NFC", "North")
-    lions = o.NFLTeam("Detroit Lions", "NFC", "North")
+    packers = NFLTeam("Green Bay", "Packers", "NFC", "North")
+    bears = NFLTeam("Chicago", "Bears", "NFC", "North")
+    vikings = NFLTeam("Minnesota", "Vikings", "NFC", "North")
+    lions = NFLTeam("Detroit", "Lions", "NFC", "North")
 
     # NFC South Teams
-    buccaneers = o.NFLTeam("Tampa Bay Buccaneers", "NFC", "South")
-    saints = o.NFLTeam("New Orleans Saints", "NFC", "South")
-    panthers = o.NFLTeam("Carolina Panthers", "NFC", "South")
-    falcons = o.NFLTeam("Atlanta Falcons", "NFC", "South")
+    buccaneers = NFLTeam("Tampa Bay", "Buccaneers", "NFC", "South")
+    saints = NFLTeam("New Orleans", "Saints", "NFC", "South")
+    panthers = NFLTeam("Carolina", "Panthers", "NFC", "South")
+    falcons = NFLTeam("Atlanta", "Falcons", "NFC", "South")
 
     # NFC West Teams
-    seahawks = o.NFLTeam("Seattle Seahawks", "NFC", "West")
-    rams = o.NFLTeam("Los Angeles Rams", "NFC", "West")
-    cardinals = o.NFLTeam("Arizona Cardinals", "NFC", "West")
-    sf49ers = o.NFLTeam("San Francisco 49ers", "NFC", "West")
+    seahawks = NFLTeam("Seattle", "Seahawks", "NFC", "West")
+    rams = NFLTeam("Los Angeles", "Rams", "NFC", "West")
+    cardinals = NFLTeam("Arizon", "Cardinals", "NFC", "West")
+    sf49ers = NFLTeam("San Francisco", "49ers", "NFC", "West")
 
     # Create a list of all 32 NFLTeam objects
-    nfl_teams = [
-        patriots, bills, dolphins, jets,
-        ravens, steelers, browns, bengals,
-        texans, colts, titans, jaguars,
-        chiefs, broncos, raiders, chargers,
-        cowboys, washington, eagles, giants,
-        packers, bears, vikings, lions,
-        buccaneers, saints, panthers, falcons,
-        seahawks, rams, cardinals, sf49ers
-    ]
+    teams = [patriots, bills, dolphins, jets, ravens, steelers, browns, bengals,
+            texans, colts, titans, jaguars,chiefs, broncos, raiders, chargers,
+            cowboys, washington, eagles, giants,packers, bears, vikings, lions,
+            buccaneers, saints, panthers, falcons, seahawks, rams, cardinals, sf49ers]
+    teams_dict = {team.mascot: team for team in teams}
 
-    # Create a list of teams in the AFC and NFC
-    AFC = [ team for team in nfl_teams if "AFC" in team.conference ]
-    NFC = [ team for team in nfl_teams if "NFC" in team.conference ]
-    # [team.name for team in AFC]
-
-
-    for team in nfl_teams:
-        team.opponents_not_faced = [team for team in nfl_teams]
-
-
-    return nfl_teams, AFC, NFC
+    return teams, teams_dict
 
 def add_game_to_team(home_team, away_team):
     """ Accesses the pre-defined object for both teams and adds this matchup to the team 

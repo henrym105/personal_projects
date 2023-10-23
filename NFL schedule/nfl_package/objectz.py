@@ -1,38 +1,37 @@
-import copy, json, random
-
-class NFLSchedule():
-    """
-    Holds the master schedule for the NFL Season, optional parameter weeks set to default = 16
-    """
-    def __init__(self, weeks = 18):
-        self.schedule = {}
-
-    def __str__(self):
-        return json.dumps(self.schedule, indent=4)
-
-    def add_matchup(self, week, hometeam, awayteam):
-        self.schedule[week] = {"home": hometeam, "away": awayteam}
-
+import numpy as np
+import copy, json, random, time
 
 class NFLTeam():
+    def __init__(self, city, mascot, conference, division):
+        self.city = city
+        self.mascot = mascot
+        self.name = city + " " + mascot
 
-    def __init__(self, name, conference, division):
-        self.name = name
         self.conference = conference
         self.division = division
-        self.bye_week = None
-        self.games_played = 0
-        self.division_games_played = 0
+
         self.conference_games_played = 0
-        self.schedule = {i: None for i in range(0,19)}
+        self.division_games_played = 0
+
+        self.schedule = {i: None for i in range(1,19)}
+        self.schedule_outline = {i: None for i in range(1,19)}
+        self.bye_week = None
+
+        self.required_opponents = {"division": None, "conference": None}
         self.opponents_not_faced = []
 
     def __repr__(self):
-        return f"{self.name} {self.conference}.{self.division[0].lower()}"
+        return f"{self.mascot} {self.conference[0]}.{self.division[0].lower()}"
 
     def __str__(self):
         # return f"{self.name} ({self.conference} {self.division}) - Bye Week: {self.bye_week} - Games Played: {self.games_played}"
         return self.__repr__()
+    
+    def set_bye_week(self, week_num):
+        """assigns week_num (int) as the bye week"""
+        self.bye_week = week_num
+        self.schedule_outline[week_num] = "-- BYE --"
+        self.schedule[self.bye_week] = " -- BYE --"
 
     def play_game(self, opponent, week_number, home_indicator):
         self.games_played += 1
@@ -43,19 +42,267 @@ class NFLTeam():
                 self.division_games_played += 1
 
         # delete the opponent from the list of other teams that this team has not played against
-        self.opponents_not_faced.remove(opponent)
+        if opponent in self.opponents_not_faced:
+            self.opponents_not_faced.remove(opponent)
 
         # add this game to the team objects schedule
         self.schedule.append({
             'week': week_number,
             'opponent': opponent,
-            'home_game': home_indicator  # You can determine if it's a home game based on your scheduling logic
+            'home_ind': home_indicator  # You can determine if it's a home game based on your scheduling logic
         })
 
     def add_game(self, week, opponent):
         self.schedule[int(week)] = opponent
-        
 
-    def set_bye_week(self, week_num):
-        self.bye_week = week_num
-        self.schedule[self.bye_week] = " -- BYE WEEK --"
+
+class NFLSchedule():
+    """
+    Holds the master schedule for the NFL Season, optional parameter weeks set to default = 18
+    """
+    def __init__(self, all_NFL_teams, weeks = 18):
+        self.allteams = all_NFL_teams
+        self.AFC = [ team for team in self.allteams if "AFC" in team.conference.upper() ]
+        self.NFC = [ team for team in self.allteams if "NFC" in team.conference.upper() ]
+        self.teams_played_other_conference = []
+        self.schedule = {i: None for i in range(1, weeks+1)}
+
+    def __str__(self):
+        # return json.dumps(self.schedule, indent=4)
+        return self.allteams
+
+    def weekly_bye_count(self, eligible_weeks):
+        # keep randomly creating the number of teeams on bye for each week until there are 32 bye slots
+        weekly_bye_count_list = [random.choice([2,4]) for week in eligible_weeks]
+        while sum(weekly_bye_count_list) != 32:
+            weekly_bye_count_list =  [random.choice([2,4]) for week in eligible_weeks]
+
+        # add the weeks at start and end of season to fill out the full schedule
+        weekly_bye_count_list = [0,0,0] + weekly_bye_count_list + [0,0,0,0]
+
+        # list of how many teams from each conference are on a bye for in each week (index)
+        weekly_bye_slots_per_conference = [value//2 for value in weekly_bye_count_list]
+        return weekly_bye_slots_per_conference
+
+
+    def assign_bye_weeks(self, debug = False):
+        """Creates the bye weeks and assign each team's .bye_week attribute
+            - This works most of the time, but still fails ~15% of the time. it either works in the first 10 attempts or it fails 10,000 attempts. 
+                - Must have something to do with the 
+            
+            Bye Week Rules:
+            - byes occur from week 4 through weeek 14
+            - either 2 or 4 teams are on a bye in any given week
+            - must choose same number of teams from the AFC and NFC each week
+            - each team has 1 bye week per season
+
+        Args:
+            league (list): a list of all NFLTeam objects in the league
+
+        Returns:
+            *** NOTE: the returned dict is just a visual aid ***
+            (dict): a dictionary with key = week_num (int) and value = list of [team.name, team.conference] for each team on bye that week 
+        """
+        
+        # Byes can only occur from week 4 to week 14 (i.e. range index 3 - 13)
+        eligible_weeks = list(range(4, 15)) 
+        weekly_bye_slots_per_conference = self.weekly_bye_count(eligible_weeks)
+        if debug:
+            print(f"{weekly_bye_slots_per_conference = }")
+
+        # Set up a while loop so that if it tries to assign a bye week on a divisional week, it will start over and try again.
+        keep_searching = True        
+        count = 0
+        if debug:
+            cutoff = 1
+        else:
+            cutoff = 10000
+
+        # create temp copies of the self attributes that we need for this round
+        AFC_teams = self.AFC.copy()
+        NFC_teams = self.NFC.copy()
+
+        while keep_searching == True:
+            random.seed(time.time())
+
+            count += 1
+            if debug:
+                print(f"{count = }")
+            if count > cutoff:
+                break
+
+            # create the empty bye list to keep track of who has been assigned a bye week already
+            bye_list = {team: None for team in self.allteams}
+
+            # create temp copies of the self attributes that we need for this round
+            AFC_teams = self.AFC.copy()
+            NFC_teams = self.NFC.copy()
+            random.shuffle(AFC_teams)
+            random.shuffle(NFC_teams)
+            # AFC_teams = list(np.random.shuffle(AFC_teams))
+            # NFC_teams = list(np.random.shuffle(NFC_teams))
+            if debug:
+                print("shuffled teams")
+
+            # for each week when byes can occur, choose "num_slots" teams who are not in divisional play this week for a bye
+            for week_num in eligible_weeks:
+                if debug:
+                    print("_"*50, f"\n{week_num = }")
+                for num_slots in range(weekly_bye_slots_per_conference[week_num-1]):
+                    # grab 1 or 2 teams from each conference, depending on how many slots are available 
+                    eligible_teams_afc = [team for team in AFC_teams if team.schedule_outline[week_num] == None]
+                    eligible_teams_nfc = [team for team in NFC_teams if team.schedule_outline[week_num] == None]
+
+                    if debug:
+                        print()
+                        print(f"{weekly_bye_slots_per_conference[week_num] = }")
+                        print(f"{AFC_teams = }")
+                        print(f"{NFC_teams = }")
+                        print(f"{eligible_teams_afc = }")
+                        print(f"{eligible_teams_nfc = }")
+                        print()
+
+                    if eligible_teams_afc and eligible_teams_nfc:
+                    # if eligible_teams_afc.any() and eligible_teams_nfc.any():
+                        """choose AFC team(s)"""
+                        # selected_team_a = random.choice(eligible_teams_afc)
+                        selected_team_a = eligible_teams_afc[0]
+                        
+                        # remove that team form the temp list so we don't pick it again
+                        AFC_teams.remove(selected_team_a)
+                        # replace the default None value with the weeke_number of their bye
+                        bye_list[selected_team_a] = week_num
+
+                        """choose NFC team(s)"""
+                        # selected_team_n = random.choice(eligible_teams_nfc)
+                        selected_team_n = eligible_teams_nfc[0]
+                        
+                        # remove that team form the temp list so we don't pick it again
+                        NFC_teams.remove(selected_team_n)
+
+                        # replace the default None value with the weeke_number of their bye
+                        bye_list[selected_team_n] = week_num
+                        if debug:
+                            print(f"{selected_team_a.name = }")
+                            print(f"{selected_team_n.name = }")
+                    else:
+                        # if there are not any eligible teams from one of the conferences, then break and try again
+                        keep_searching = True
+                        break
+            
+            if any(value is None for value in bye_list.values()):
+                # At least one team has not been assigned a bye week, so run it back.
+                keep_searching = True                
+            else:
+                # All of the teams have been assigned a bye week, so we have succeeded and do not need to try again.
+                print("\nSUCCESS!!")
+                if debug:
+                    print(f"{count = }")
+                    print(f"{bye_list = }")
+                keep_searching = False
+        
+        """ now outside of the while loop """
+        print(f"\n{count = }")
+
+        if None not in bye_list.values():
+            bye_list = dict(sorted(bye_list.items(), key=lambda item: item[1]))
+            print(f"{bye_list = }")
+
+        for team, byeweek in bye_list.items():
+            team.set_bye_week(byeweek)
+
+        return count, cutoff
+
+    def set_schedule_outline(self, debug = False) -> None:
+        """ For each division, set aside 6 weeks for divisional games. add those 6 weeks to each teams sheduule outline
+            Then add each team's bye week, continue doing until none of the bye weeks overlap with each teams weeks reserved for divisional games 
+        """
+
+        ####################################################################################
+        # Establish 6 weeks for each division to play against themselves.
+        divisions = ["North", "South", "East", "West"]
+
+        # currently excluding week 13 and 14 (to ensure we can always have enough teams eligible for a bye week)
+        div_eligible_weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13] + [16,17,18]
+
+        for div in divisions:
+            divisional_game_weeks = sorted(np.random.choice(div_eligible_weeks, size = 6, replace = False))
+            for team in [t for t in self.allteams if t.division == div]:
+                for week_num in divisional_game_weeks:
+                    team.schedule_outline[week_num] = "d"
+        print("6 divisional weeks assigned")
+
+        ####################################################################################
+        # Set up 1 bye week for all teams:
+        x, cutoff = self.assign_bye_weeks(debug)
+        if x > cutoff:
+            print("FAIL")
+        print("1 bye week assigned")
+
+        ####################################################################################
+        # Reserve one week for across-conference games
+        open_weeks = list(range(1,19))
+        for team in self.allteams:
+            for week in open_weeks:
+                # if a team has something scheduled that week, remove it from the options
+                if team.schedule_outline[week] is not None:
+                    open_weeks.remove(week)
+        if debug:
+            print(f"{open_weeks = }")
+
+        ####################################################################################
+        # Reserve the earliest open week for across-conference games
+        xconf_week = min(open_weeks)
+        for team in self.allteams:
+            team.schedule_outline[xconf_week] = "XC"
+        print("1 cross-conference week assigned")
+
+        ####################################################################################
+        # designate the remaining weeks as random conference games
+        for team in self.allteams:
+            for week_num in team.schedule_outline.keys():
+                if team.schedule_outline[week_num] == None:
+                    team.schedule_outline[week_num] = "conf"
+        print("remaining weeks set as non-divisional conference games")
+
+    def add_game_to_teams(self, week: int, home_team: NFLTeam, away_team: NFLTeam) -> None:
+        """Accesses the pre-defined object for both teams and adds this matchup to the team objects scheduule
+        Args:
+            week (int): the week that the two teams are playing each other
+            home_team (class <NFLTeam>): the home team 
+            away_team (class <NFLTeam>): the away team 
+        """
+        # check if its a divisional or conference game
+        if home_team.conference == home_team.conference:
+            home_team.conference_games_played += 1
+            away_team.conference_games_played += 1
+            # if in conference, check if also in division.
+            if home_team.division == home_team.division:
+                home_team.division_games_played += 1
+                away_team.division_games_played += 1
+
+    def add_game_to_schedule(self, week, hometeam: NFLTeam, awayteam: NFLTeam):
+        # self.schedule[week] = {"home": hometeam, "away": awayteam}
+        # self.schedule[week] = self.schedule[week] + {"home": home_team, "away": away_team}
+        pass
+
+    def set_real_schedule(self, debug = False) -> None:
+        for week in range(1, 19):
+            # need to be sure that every team plays 1 time per week (or has a bye)
+            teams_list = self.allteams.copy()
+
+            for team in teams_list:
+                if "BYE" in team.schedule_outline[week]:
+                    if debug:
+                        print(f"{week = }, bye team = {team.mascot}")
+
+                    # team.schedule[week] = "-BYE-"
+                    teams_list.remove(team)
+                if "bye" in team.schedule_outline[week].lower():
+                    pass
+                if "bye" in team.schedule_outline[week].lower():
+                    pass
+            print(teams_list)
+
+            # print(week)
+            # self.schedule[week]
