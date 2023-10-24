@@ -1,6 +1,7 @@
 import functionz as f
 from objectz import NFLTeam
 from objectz import NFLSchedule
+import pandas as pd
 
 
 if __name__ == "__main__":
@@ -11,6 +12,8 @@ if __name__ == "__main__":
     myleague = NFLSchedule(teams)
     myleague.set_schedule_outline(debug=False)
 
-    
+    outlines = f.create_outlines_df(myleague)
+    print()
+    print(outlines)
 
     

@@ -85,25 +85,8 @@ class NFLSchedule():
         return weekly_bye_slots_per_conference
 
 
-    def assign_bye_weeks(self, debug = False):
-        """Creates the bye weeks and assign each team's .bye_week attribute
-            - This works most of the time, but still fails ~15% of the time. it either works in the first 10 attempts or it fails 10,000 attempts. 
-                - Must have something to do with the 
-            
-            Bye Week Rules:
-            - byes occur from week 4 through weeek 14
-            - either 2 or 4 teams are on a bye in any given week
-            - must choose same number of teams from the AFC and NFC each week
-            - each team has 1 bye week per season
-
-        Args:
-            league (list): a list of all NFLTeam objects in the league
-
-        Returns:
-            *** NOTE: the returned dict is just a visual aid ***
-            (dict): a dictionary with key = week_num (int) and value = list of [team.name, team.conference] for each team on bye that week 
-        """
-        
+    def assign_bye_weeks(self, cutoff = 10000, debug = False):
+        """ """
         # Byes can only occur from week 4 to week 14 (i.e. range index 3 - 13)
         eligible_weeks = list(range(4, 15)) 
         weekly_bye_slots_per_conference = self.weekly_bye_count(eligible_weeks)
@@ -122,6 +105,7 @@ class NFLSchedule():
         AFC_teams = self.AFC.copy()
         NFC_teams = self.NFC.copy()
 
+        # ________________________________________________________________________________________________
         while keep_searching == True:
             random.seed(time.time())
 
@@ -204,9 +188,9 @@ class NFLSchedule():
         """ now outside of the while loop """
         print(f"\n{count = }")
 
-        if None not in bye_list.values():
+        if ~(None in bye_list.values()):
             bye_list = dict(sorted(bye_list.items(), key=lambda item: item[1]))
-            print(f"{bye_list = }")
+            # print(f"{bye_list = }")
 
         for team, byeweek in bye_list.items():
             team.set_bye_week(byeweek)

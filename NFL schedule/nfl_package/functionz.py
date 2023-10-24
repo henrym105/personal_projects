@@ -1,4 +1,5 @@
 import random
+import pandas as pd
 from objectz import NFLSchedule, NFLTeam
 
 
@@ -135,4 +136,6 @@ def assign_bye_weeks(list_of_teams):
     print({week: [[team.name, team.conference] for team in list_of_teams if team.bye_week == week] for week in eligible_weeks})
     # return bye_week_summary
 
-
+def create_outlines_df(league: NFLSchedule) -> pd.DataFrame:
+    new_dict = {team: team.schedule_outline for team in league.allteams}
+    return pd.DataFrame.from_dict(new_dict, orient='index')
