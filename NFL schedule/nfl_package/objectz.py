@@ -371,8 +371,6 @@ class NFLSchedule():
             # assign divisional games
             teams_div_game = [team for team in teams_list if team.schedule_outline[week].lower() == "d"]
             unique_divisions = set([team.unique_division for team in teams_div_game])
-
-
             for div in unique_divisions:
                 div_teams = [team for team in teams_div_game if team.unique_division == div]
                 while div_teams:
@@ -380,13 +378,6 @@ class NFLSchedule():
                     home = div_teams.pop()
                     away = div_teams.pop()
                     self.add_game_to_schedule(week = week, hometeam = home, awayteam = away)
-
-
-            for i in range(0, len(teams_div_game), 2):
-
-                team = teams_div_game[i]
-                print(i)
-                # self.add_game_to_schedule(week, )
 
             # assign in-conference games
             teams_conf_game = [team for team in teams_list if team.schedule_outline[week] == "conf"]
