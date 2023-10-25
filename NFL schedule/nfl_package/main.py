@@ -13,14 +13,12 @@ if __name__ == "__main__":
     # myleague = NFLSchedule(teams)
     myleague = NFLSchedule()
 
-
-    # 
     myleague.set_schedule_outline(debug=False)
 
-    outlines = f.create_schedule_outlin_df(myleague)
+    outlines = f.create_schedule_outline_df(myleague)
     print(outlines)
     print("---"*50)
 
-    print(myleague.teams_dict["Bengals"].schedule)
-
+    # print(myleague.teams_dict["Bengals"].schedule)
+    myleague.set_real_schedule()
     

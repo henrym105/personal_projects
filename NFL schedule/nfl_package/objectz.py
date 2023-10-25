@@ -9,6 +9,7 @@ class NFLTeam():
 
         self.conference = conference
         self.division = division
+        self.unique_division = f"{self.conference[0]}.{self.division[0]}"
 
         self.conference_games_played = 0
         self.division_games_played = 0
@@ -21,7 +22,7 @@ class NFLTeam():
         self.opponents_not_faced = []
 
     def __repr__(self):
-        return f"{self.mascot} {self.conference[0]}.{self.division[0].lower()}"
+        return f"{self.mascot} {self.conference[0]}.{self.division[0]}"
 
     def __str__(self):
         # return f"{self.name} ({self.conference} {self.division}) - Bye Week: {self.bye_week} - Games Played: {self.games_played}"
@@ -267,6 +268,11 @@ class NFLSchedule():
             Then add each team's bye week, continue doing until none of the bye weeks overlap with each teams weeks reserved for divisional games 
         """
 
+        """ 
+            !!! ISSUE !!! 
+            there must be at least 2 divisons per conference in every week that teams are playing conference games
+        """
+
         ####################################################################################
         # Establish 6 weeks for each division to play against themselves.
         divisions = ["North", "South", "East", "West"]
@@ -289,7 +295,7 @@ class NFLSchedule():
         print("1 bye week assigned")
 
         ####################################################################################
-        # Reserve one week for across-conference games
+        # Reserve one week for cross-conference games
         open_weeks = list(range(1,19))
         for team in self.allteams:
             for week in open_weeks:
@@ -300,7 +306,7 @@ class NFLSchedule():
             print(f"{open_weeks = }")
 
         ####################################################################################
-        # Reserve the earliest open week for across-conference games
+        # Reserve the earliest open week for in-conference games
         xconf_week = min(open_weeks)
         for team in self.allteams:
             team.schedule_outline[xconf_week] = "XC"
@@ -321,19 +327,35 @@ class NFLSchedule():
             home_team (class <NFLTeam>): the home team 
             away_team (class <NFLTeam>): the away team 
         """
-        # check if its a divisional or conference game
-        if home_team.conference == home_team.conference:
-            home_team.conference_games_played += 1
-            away_team.conference_games_played += 1
-            # if in conference, check if also in division.
-            if home_team.division == home_team.division:
-                home_team.division_games_played += 1
-                away_team.division_games_played += 1
-
-    def add_game_to_schedule(self, week, hometeam: NFLTeam, awayteam: NFLTeam):
-        # self.schedule[week] = {"home": hometeam, "away": awayteam}
-        # self.schedule[week] = self.schedule[week] + {"home": home_team, "away": away_team}
         pass
+
+        # if home_team.schedule[week] is None:
+        #     self.schedule[week] = {"home": hometeam, "away": awayteam}
+        # else:
+        #     self.schedule[week] = self.schedule[week] + {"home": hometeam, "away": awayteam}
+
+        # # check if its a divisional or conference game
+        # if home_team.conference == home_team.conference:
+        #     home_team.conference_games_played += 1
+        #     away_team.conference_games_played += 1
+        #     # if in conference, check if also in division.
+        #     if home_team.division == home_team.division:
+        #         home_team.division_games_played += 1
+        #         away_team.division_games_played += 1
+
+    def add_game_to_schedule(self, week: int, hometeam: NFLTeam, awayteam: NFLTeam):
+        """Adds a pair to the week index of the self.schedule.
+
+        Args:
+            week: The week when this game is played.
+            hometeam: The home team.
+            awayteam: The away team.
+        """
+
+        if self.schedule[week] is None:
+            self.schedule[week] = []
+        self.schedule[week].append([hometeam, awayteam])
+
 
     def set_real_schedule(self, debug = False) -> None:
         """each week, find out how which teams are eligble to play each other 
@@ -345,6 +367,40 @@ class NFLSchedule():
         for week in range(1, 19):
             # need to be sure that every team plays 1 time per week (or has a bye)
             teams_list = self.allteams.copy()
+            
+            # assign divisional games
+            teams_div_game = [team for team in teams_list if team.schedule_outline[week].lower() == "d"]
+            unique_divisions = set([team.unique_division for team in teams_div_game])
+
+
+            for div in unique_divisions:
+                div_teams = [team for team in teams_div_game if team.unique_division == div]
+                while div_teams:
+                    random.shuffle(div_teams)
+                    home = div_teams.pop()
+                    away = div_teams.pop()
+                    self.add_game_to_schedule(week = week, hometeam = home, awayteam = away)
+
+
+            for i in range(0, len(teams_div_game), 2):
+
+                team = teams_div_game[i]
+                print(i)
+                # self.add_game_to_schedule(week, )
+
+            # assign in-conference games
+            teams_conf_game = [team for team in teams_list if team.schedule_outline[week] == "conf"]
+            for team in teams_conf_game:
+                pass
+            
+            # pass over teams with a bye week
+            teams_w_bye = [team for team in teams_list if "bye" in team.schedule_outline[week].lower()]
+            
+            # assign cross-conference games
+            teams_xc_game = [team for team in teams_list if team.schedule_outline[week] == "XC"]
+            for team in teams_xc_game:
+                pass
+            
 
             for team in teams_list:
                 if "bye" in team.schedule_outline[week].lower():
@@ -357,7 +413,6 @@ class NFLSchedule():
                     pass
                 if "bye" in team.schedule_outline[week].lower():
                     pass
-            print(teams_list)
 
             # print(week)
             # self.schedule[week]

@@ -3,65 +3,65 @@ import pandas as pd
 from objectz import NFLSchedule, NFLTeam
 
 
-def create_teams() -> list:
-    """ Returns a list of the 32 NFLTeam objects, one for each team"""
+# def create_teams() -> list:
+#     """ Returns a list of the 32 NFLTeam objects, one for each team"""
 
-    # AFC East Teams
-    patriots = NFLTeam("New England", "Patriots", "AFC", "East")
-    bills = NFLTeam("Buffalo", "Bills", "AFC", "East")
-    dolphins = NFLTeam("Miami", "Dolphins", "AFC", "East")
-    jets = NFLTeam("New York", "Jets", "AFC", "East")
+#     # AFC East Teams
+#     patriots = NFLTeam("New England", "Patriots", "AFC", "East")
+#     bills = NFLTeam("Buffalo", "Bills", "AFC", "East")
+#     dolphins = NFLTeam("Miami", "Dolphins", "AFC", "East")
+#     jets = NFLTeam("New York", "Jets", "AFC", "East")
 
-    # AFC North Teams
-    ravens = NFLTeam("Baltimore", "Ravens", "AFC", "North")
-    steelers = NFLTeam("Pittsburgh", "Steelers", "AFC", "North")
-    browns = NFLTeam("Cleveland", "Browns", "AFC", "North")
-    bengals = NFLTeam("Cincinnati", "Bengals", "AFC", "North")
+#     # AFC North Teams
+#     ravens = NFLTeam("Baltimore", "Ravens", "AFC", "North")
+#     steelers = NFLTeam("Pittsburgh", "Steelers", "AFC", "North")
+#     browns = NFLTeam("Cleveland", "Browns", "AFC", "North")
+#     bengals = NFLTeam("Cincinnati", "Bengals", "AFC", "North")
 
-    # AFC South Teams
-    texans = NFLTeam("Houston", "Texans", "AFC", "South")
-    colts = NFLTeam("Indianapolis", "Colts", "AFC", "South")
-    titans = NFLTeam("Tennessee", "Titans", "AFC", "South")
-    jaguars = NFLTeam("Jacksonville", "Jaguars", "AFC", "South")
+#     # AFC South Teams
+#     texans = NFLTeam("Houston", "Texans", "AFC", "South")
+#     colts = NFLTeam("Indianapolis", "Colts", "AFC", "South")
+#     titans = NFLTeam("Tennessee", "Titans", "AFC", "South")
+#     jaguars = NFLTeam("Jacksonville", "Jaguars", "AFC", "South")
 
-    # AFC West Teams
-    chiefs = NFLTeam("Kansas City", "Chiefs", "AFC", "West")
-    broncos = NFLTeam("Denver", "Broncos", "AFC", "West")
-    raiders = NFLTeam("Las Vegas", "Raiders", "AFC", "West")
-    chargers = NFLTeam("Los Angeles", "Chargers", "AFC", "West")
+#     # AFC West Teams
+#     chiefs = NFLTeam("Kansas City", "Chiefs", "AFC", "West")
+#     broncos = NFLTeam("Denver", "Broncos", "AFC", "West")
+#     raiders = NFLTeam("Las Vegas", "Raiders", "AFC", "West")
+#     chargers = NFLTeam("Los Angeles", "Chargers", "AFC", "West")
 
-    # NFC East Teams
-    cowboys = NFLTeam("Dallas", "Cowboys", "NFC", "East")
-    washington = NFLTeam("Washington", "Commanders", "NFC", "East")
-    eagles = NFLTeam("Philadelphia", "Eagles", "NFC", "East")
-    giants = NFLTeam("New York", "Giants", "NFC", "East")
+#     # NFC East Teams
+#     cowboys = NFLTeam("Dallas", "Cowboys", "NFC", "East")
+#     washington = NFLTeam("Washington", "Commanders", "NFC", "East")
+#     eagles = NFLTeam("Philadelphia", "Eagles", "NFC", "East")
+#     giants = NFLTeam("New York", "Giants", "NFC", "East")
 
-    # NFC North Teams
-    packers = NFLTeam("Green Bay", "Packers", "NFC", "North")
-    bears = NFLTeam("Chicago", "Bears", "NFC", "North")
-    vikings = NFLTeam("Minnesota", "Vikings", "NFC", "North")
-    lions = NFLTeam("Detroit", "Lions", "NFC", "North")
+#     # NFC North Teams
+#     packers = NFLTeam("Green Bay", "Packers", "NFC", "North")
+#     bears = NFLTeam("Chicago", "Bears", "NFC", "North")
+#     vikings = NFLTeam("Minnesota", "Vikings", "NFC", "North")
+#     lions = NFLTeam("Detroit", "Lions", "NFC", "North")
 
-    # NFC South Teams
-    buccaneers = NFLTeam("Tampa Bay", "Buccaneers", "NFC", "South")
-    saints = NFLTeam("New Orleans", "Saints", "NFC", "South")
-    panthers = NFLTeam("Carolina", "Panthers", "NFC", "South")
-    falcons = NFLTeam("Atlanta", "Falcons", "NFC", "South")
+#     # NFC South Teams
+#     buccaneers = NFLTeam("Tampa Bay", "Buccaneers", "NFC", "South")
+#     saints = NFLTeam("New Orleans", "Saints", "NFC", "South")
+#     panthers = NFLTeam("Carolina", "Panthers", "NFC", "South")
+#     falcons = NFLTeam("Atlanta", "Falcons", "NFC", "South")
 
-    # NFC West Teams
-    seahawks = NFLTeam("Seattle", "Seahawks", "NFC", "West")
-    rams = NFLTeam("Los Angeles", "Rams", "NFC", "West")
-    cardinals = NFLTeam("Arizon", "Cardinals", "NFC", "West")
-    sf49ers = NFLTeam("San Francisco", "49ers", "NFC", "West")
+#     # NFC West Teams
+#     seahawks = NFLTeam("Seattle", "Seahawks", "NFC", "West")
+#     rams = NFLTeam("Los Angeles", "Rams", "NFC", "West")
+#     cardinals = NFLTeam("Arizon", "Cardinals", "NFC", "West")
+#     sf49ers = NFLTeam("San Francisco", "49ers", "NFC", "West")
 
-    # Create a list of all 32 NFLTeam objects
-    teams = [patriots, bills, dolphins, jets, ravens, steelers, browns, bengals,
-            texans, colts, titans, jaguars,chiefs, broncos, raiders, chargers,
-            cowboys, washington, eagles, giants,packers, bears, vikings, lions,
-            buccaneers, saints, panthers, falcons, seahawks, rams, cardinals, sf49ers]
-    teams_dict = {team.mascot: team for team in teams}
+#     # Create a list of all 32 NFLTeam objects
+#     teams = [patriots, bills, dolphins, jets, ravens, steelers, browns, bengals,
+#             texans, colts, titans, jaguars,chiefs, broncos, raiders, chargers,
+#             cowboys, washington, eagles, giants,packers, bears, vikings, lions,
+#             buccaneers, saints, panthers, falcons, seahawks, rams, cardinals, sf49ers]
+#     teams_dict = {team.mascot: team for team in teams}
 
-    return teams, teams_dict
+#     return teams, teams_dict
 
 def add_game_to_team(home_team, away_team):
     """ Accesses the pre-defined object for both teams and adds this matchup to the team 
@@ -136,6 +136,6 @@ def assign_bye_weeks(list_of_teams):
     print({week: [[team.name, team.conference] for team in list_of_teams if team.bye_week == week] for week in eligible_weeks})
     # return bye_week_summary
 
-def create_schedule_outlin_df(league: NFLSchedule) -> pd.DataFrame:
+def create_schedule_outline_df(league: NFLSchedule) -> pd.DataFrame:
     new_dict = {team: team.schedule_outline for team in league.allteams}
     return pd.DataFrame.from_dict(new_dict, orient='index')
