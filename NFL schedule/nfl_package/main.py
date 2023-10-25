@@ -5,15 +5,22 @@ import pandas as pd
 
 
 if __name__ == "__main__":
-    # all_teams_list, afc, nfc = f.create_teams()
-    # f.assign_bye_weeks(all_teams_list)
     
-    teams, teams_dict = f.create_teams()
-    myleague = NFLSchedule(teams)
+    # create the teams, and put them in a dict for easy access by mascot name
+    # teams, teams_dict = f.create_teams()
+
+    # create the league with all of the teams
+    # myleague = NFLSchedule(teams)
+    myleague = NFLSchedule()
+
+
+    # 
     myleague.set_schedule_outline(debug=False)
 
-    outlines = f.create_outlines_df(myleague)
-    print()
+    outlines = f.create_schedule_outlin_df(myleague)
     print(outlines)
+    print("---"*50)
+
+    print(myleague.teams_dict["Bengals"].schedule)
 
     

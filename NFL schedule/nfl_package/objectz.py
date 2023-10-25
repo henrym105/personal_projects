@@ -60,8 +60,12 @@ class NFLSchedule():
     """
     Holds the master schedule for the NFL Season, optional parameter weeks set to default = 18
     """
-    def __init__(self, all_NFL_teams, weeks = 18):
-        self.allteams = all_NFL_teams
+    def __init__(self, weeks = 18):
+        # self.allteams = all_NFL_teams
+        self.weeks = weeks
+
+        self.allteams = self.create_teams()
+        self.teams_dict = {team.mascot: team for team in self.allteams}
         self.AFC = [ team for team in self.allteams if "AFC" in team.conference.upper() ]
         self.NFC = [ team for team in self.allteams if "NFC" in team.conference.upper() ]
         self.teams_played_other_conference = []
@@ -70,6 +74,65 @@ class NFLSchedule():
     def __str__(self):
         # return json.dumps(self.schedule, indent=4)
         return self.allteams
+
+    def create_teams(self) -> list:
+        """ Returns a list of the 32 NFLTeam objects, one for each team"""
+
+        # AFC East Teams
+        patriots = NFLTeam("New England", "Patriots", "AFC", "East")
+        bills = NFLTeam("Buffalo", "Bills", "AFC", "East")
+        dolphins = NFLTeam("Miami", "Dolphins", "AFC", "East")
+        jets = NFLTeam("New York", "Jets", "AFC", "East")
+
+        # AFC North Teams
+        ravens = NFLTeam("Baltimore", "Ravens", "AFC", "North")
+        steelers = NFLTeam("Pittsburgh", "Steelers", "AFC", "North")
+        browns = NFLTeam("Cleveland", "Browns", "AFC", "North")
+        bengals = NFLTeam("Cincinnati", "Bengals", "AFC", "North")
+
+        # AFC South Teams
+        texans = NFLTeam("Houston", "Texans", "AFC", "South")
+        colts = NFLTeam("Indianapolis", "Colts", "AFC", "South")
+        titans = NFLTeam("Tennessee", "Titans", "AFC", "South")
+        jaguars = NFLTeam("Jacksonville", "Jaguars", "AFC", "South")
+
+        # AFC West Teams
+        chiefs = NFLTeam("Kansas City", "Chiefs", "AFC", "West")
+        broncos = NFLTeam("Denver", "Broncos", "AFC", "West")
+        raiders = NFLTeam("Las Vegas", "Raiders", "AFC", "West")
+        chargers = NFLTeam("Los Angeles", "Chargers", "AFC", "West")
+
+        # NFC East Teams
+        cowboys = NFLTeam("Dallas", "Cowboys", "NFC", "East")
+        washington = NFLTeam("Washington", "Commanders", "NFC", "East")
+        eagles = NFLTeam("Philadelphia", "Eagles", "NFC", "East")
+        giants = NFLTeam("New York", "Giants", "NFC", "East")
+
+        # NFC North Teams
+        packers = NFLTeam("Green Bay", "Packers", "NFC", "North")
+        bears = NFLTeam("Chicago", "Bears", "NFC", "North")
+        vikings = NFLTeam("Minnesota", "Vikings", "NFC", "North")
+        lions = NFLTeam("Detroit", "Lions", "NFC", "North")
+
+        # NFC South Teams
+        buccaneers = NFLTeam("Tampa Bay", "Buccaneers", "NFC", "South")
+        saints = NFLTeam("New Orleans", "Saints", "NFC", "South")
+        panthers = NFLTeam("Carolina", "Panthers", "NFC", "South")
+        falcons = NFLTeam("Atlanta", "Falcons", "NFC", "South")
+
+        # NFC West Teams
+        seahawks = NFLTeam("Seattle", "Seahawks", "NFC", "West")
+        rams = NFLTeam("Los Angeles", "Rams", "NFC", "West")
+        cardinals = NFLTeam("Arizon", "Cardinals", "NFC", "West")
+        sf49ers = NFLTeam("San Francisco", "49ers", "NFC", "West")
+
+        # Create a list of all 32 NFLTeam objects
+        teams = [patriots, bills, dolphins, jets, ravens, steelers, browns, bengals,
+                texans, colts, titans, jaguars,chiefs, broncos, raiders, chargers,
+                cowboys, washington, eagles, giants,packers, bears, vikings, lions,
+                buccaneers, saints, panthers, falcons, seahawks, rams, cardinals, sf49ers]
+
+        return teams
 
     def weekly_bye_count(self, eligible_weeks):
         # keep randomly creating the number of teeams on bye for each week until there are 32 bye slots
@@ -83,7 +146,6 @@ class NFLSchedule():
         # list of how many teams from each conference are on a bye for in each week (index)
         weekly_bye_slots_per_conference = [value//2 for value in weekly_bye_count_list]
         return weekly_bye_slots_per_conference
-
 
     def assign_bye_weeks(self, cutoff = 10000, debug = False):
         """ """
@@ -188,10 +250,13 @@ class NFLSchedule():
         """ now outside of the while loop """
         print(f"\n{count = }")
 
-        if ~(None in bye_list.values()):
+        if None in bye_list.values():
+            raise Exception("")
+        elif debug:
             bye_list = dict(sorted(bye_list.items(), key=lambda item: item[1]))
-            # print(f"{bye_list = }")
+            print(f"{bye_list = }")
 
+        # 
         for team, byeweek in bye_list.items():
             team.set_bye_week(byeweek)
 
@@ -271,12 +336,18 @@ class NFLSchedule():
         pass
 
     def set_real_schedule(self, debug = False) -> None:
+        """each week, find out how which teams are eligble to play each other 
+
+        Args:
+            debug (bool, optional): set to True to enable debugging print statements. Defaults to False.
+        """
+
         for week in range(1, 19):
             # need to be sure that every team plays 1 time per week (or has a bye)
             teams_list = self.allteams.copy()
 
             for team in teams_list:
-                if "BYE" in team.schedule_outline[week]:
+                if "bye" in team.schedule_outline[week].lower():
                     if debug:
                         print(f"{week = }, bye team = {team.mascot}")
 
