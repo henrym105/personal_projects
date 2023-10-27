@@ -300,6 +300,26 @@ class NFLSchedule():
             self.schedule[week] = []
         self.schedule[week].append([hometeam, awayteam])
 
+    # def non_consecutive_random_choice(self, options, size=6) -> list:
+    #     # Initialize an empty list to store the non-consecutive choices
+    #     choices = []
+    #     off_limits = []
+
+    #     while len(choices) < size:
+    #         # Randomly sample an index from the list of options
+    #         index = np.random.choice(options)
+    #         h=0
+    #         # If the choices list is empty or the sampled index is not consecutive to the last choice, add it to the choices
+    #         # if (len(choices) == 0) or index != choices[-1] + 1:
+    #         if index not in off_limits:
+    #             choices.append(index)
+    #             off_limits.append([index-1, index, index+1])
+
+    #     # Retrieve the corresponding elements from the list of options
+    #     result = sorted([options[i] for i in choices])
+
+    #     return result
+    
     def set_schedule_outline(self, debug = False) -> None:
         """ For each division, set aside 6 weeks for divisional games. add those 6 weeks to each teams sheduule outline
             Then add each team's bye week, continue doing until none of the bye weeks overlap with each teams weeks reserved for divisional games 
@@ -312,13 +332,19 @@ class NFLSchedule():
 
         ####################################################################################
         # Establish 6 weeks for each division to play against themselves.
-        # currently excluding week 13 and 14 (to ensure we can always have enough teams eligible for a bye week)
+        # currently excluding week 14 (to ensure we can always have enough teams eligible for a bye week)
         div_eligible_weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13] + [16,17,18]
-        unique_divisions = set([team.unique_division for team in self.allteams])
+        # unique_divisions = set([team.unique_division for team in self.allteams])
+        unique_divisions = set([team.division for team in self.allteams])
+
 
         for div in unique_divisions:
+            div_teams = [t for t in self.allteams if t.division == div]
             divisional_game_weeks = sorted(np.random.choice(div_eligible_weeks, size = 6, replace = False))
-            for team in [t for t in self.allteams if t.unique_division == div]:
+            # divisional_game_weeks = self.non_consecutive_random_choice(div_eligible_weeks, 6)
+            # for team in [t for t in self.allteams if t.unique_division == div]:
+            henry=0
+            for team in div_teams:
                 for week_num in divisional_game_weeks:
                     team.schedule_outline[week_num] = "d"
 

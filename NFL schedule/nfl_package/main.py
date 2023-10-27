@@ -14,5 +14,5 @@ if __name__ == "__main__":
     print()
 
     # print(myleague.teams_dict["Bengals"].schedule)
-    myleague.set_real_schedule()
+    # myleague.set_real_schedule()
     

@@ -1,0 +1,30 @@
+things to keep track of
+
+league
+- all 32 teams
+
+conference
+- 
+
+division
+- 6 weeks for in-division games
+- 1 other division in the same conference -> 4 games
+
+
+team
+
+
+
+Bengals 2023:
+
+in division:
+N.n -> [1, 2, 11, 12,16, 18]
+
+same conference, other division:
+N.w -> [3 (rams), 5 (cardinals), 6 (seahawks), 8 (49ers)]
+A.s -> [4 (titans), ]
+
+BYE -> 7
+
+
+
