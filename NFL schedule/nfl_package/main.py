@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     outline = myleague.set_schedule_outline(debug=False)
     print(outline)
-    print("---"*50)
+    print("==="*60)
     print()
 
     # print(myleague.teams_dict["Bengals"].schedule)

@@ -258,11 +258,47 @@ class NFLSchedule():
             bye_list = dict(sorted(bye_list.items(), key=lambda item: item[1]))
             print(f"{bye_list = }")
 
-        # 
+
         for team, byeweek in bye_list.items():
             team.set_bye_week(byeweek)
 
         return count, cutoff
+
+    def add_game_to_teams(self, week: int, home_team: NFLTeam, away_team: NFLTeam) -> None:
+        """Accesses the pre-defined object for both teams and adds this matchup to the team objects scheduule
+        Args:
+            week (int): the week that the two teams are playing each other
+            home_team (class <NFLTeam>): the home team 
+            away_team (class <NFLTeam>): the away team 
+        """
+        pass
+
+        # if home_team.schedule[week] is None:
+        #     self.schedule[week] = {"home": hometeam, "away": awayteam}
+        # else:
+        #     self.schedule[week] = self.schedule[week] + {"home": hometeam, "away": awayteam}
+
+        # # check if its a divisional or conference game
+        # if home_team.conference == home_team.conference:
+        #     home_team.conference_games_played += 1
+        #     away_team.conference_games_played += 1
+        #     # if in conference, check if also in division.
+        #     if home_team.division == home_team.division:
+        #         home_team.division_games_played += 1
+        #         away_team.division_games_played += 1
+
+    def add_game_to_schedule(self, week: int, hometeam: NFLTeam, awayteam: NFLTeam):
+        """Adds a pair to the week index of the self.schedule.
+
+        Args:
+            week: The week when this game is played.
+            hometeam: The home team.
+            awayteam: The away team.
+        """
+
+        if self.schedule[week] is None:
+            self.schedule[week] = []
+        self.schedule[week].append([hometeam, awayteam])
 
     def set_schedule_outline(self, debug = False) -> None:
         """ For each division, set aside 6 weeks for divisional games. add those 6 weeks to each teams sheduule outline
@@ -326,42 +362,6 @@ class NFLSchedule():
         new_dict = {team: team.schedule_outline for team in self.allteams}
         return pd.DataFrame.from_dict(new_dict, orient='index')
 
-    def add_game_to_teams(self, week: int, home_team: NFLTeam, away_team: NFLTeam) -> None:
-        """Accesses the pre-defined object for both teams and adds this matchup to the team objects scheduule
-        Args:
-            week (int): the week that the two teams are playing each other
-            home_team (class <NFLTeam>): the home team 
-            away_team (class <NFLTeam>): the away team 
-        """
-        pass
-
-        # if home_team.schedule[week] is None:
-        #     self.schedule[week] = {"home": hometeam, "away": awayteam}
-        # else:
-        #     self.schedule[week] = self.schedule[week] + {"home": hometeam, "away": awayteam}
-
-        # # check if its a divisional or conference game
-        # if home_team.conference == home_team.conference:
-        #     home_team.conference_games_played += 1
-        #     away_team.conference_games_played += 1
-        #     # if in conference, check if also in division.
-        #     if home_team.division == home_team.division:
-        #         home_team.division_games_played += 1
-        #         away_team.division_games_played += 1
-
-    def add_game_to_schedule(self, week: int, hometeam: NFLTeam, awayteam: NFLTeam):
-        """Adds a pair to the week index of the self.schedule.
-
-        Args:
-            week: The week when this game is played.
-            hometeam: The home team.
-            awayteam: The away team.
-        """
-
-        if self.schedule[week] is None:
-            self.schedule[week] = []
-        self.schedule[week].append([hometeam, awayteam])
-
     def set_real_schedule(self, debug = False) -> None:
         """each week, find out how which teams are eligble to play each other 
 
@@ -387,9 +387,7 @@ class NFLSchedule():
             # assign in-conference games
             teams_conf_game = [team for team in teams_list if team.schedule_outline[week] == "conf"]
             conferences = set([team.conference for team in teams_div_game])
-
             abcdef = 0
-
             for conf in conferences:
                 conf_teams = [team for team in teams_conf_game if team.conference == conf]
                 random.shuffle(conf_teams)
