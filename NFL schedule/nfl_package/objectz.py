@@ -1,5 +1,6 @@
 import numpy as np
 import copy, json, random, time
+import pandas as pd
 
 class NFLTeam():
     def __init__(self, city, mascot, conference, division):
@@ -252,7 +253,7 @@ class NFLSchedule():
         print(f"\n{count = }")
 
         if None in bye_list.values():
-            raise Exception("")
+            raise Exception(" -- MAX ITERATIONS REACHED -- ")
         elif debug:
             bye_list = dict(sorted(bye_list.items(), key=lambda item: item[1]))
             print(f"{bye_list = }")
@@ -270,21 +271,21 @@ class NFLSchedule():
 
         """ 
             !!! ISSUE !!! 
-            there must be at least 2 divisons per conference in every week that teams are playing conference games
+            no more than 2 of the 4 divisons in each conference can have divisional games per week.
         """
 
         ####################################################################################
         # Establish 6 weeks for each division to play against themselves.
-        divisions = ["North", "South", "East", "West"]
-
         # currently excluding week 13 and 14 (to ensure we can always have enough teams eligible for a bye week)
         div_eligible_weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13] + [16,17,18]
+        unique_divisions = set([team.unique_division for team in self.allteams])
 
-        for div in divisions:
+        for div in unique_divisions:
             divisional_game_weeks = sorted(np.random.choice(div_eligible_weeks, size = 6, replace = False))
-            for team in [t for t in self.allteams if t.division == div]:
+            for team in [t for t in self.allteams if t.unique_division == div]:
                 for week_num in divisional_game_weeks:
                     team.schedule_outline[week_num] = "d"
+
         print("6 divisional weeks assigned")
 
         ####################################################################################
@@ -319,6 +320,11 @@ class NFLSchedule():
                 if team.schedule_outline[week_num] == None:
                     team.schedule_outline[week_num] = "conf"
         print("remaining weeks set as non-divisional conference games")
+
+        ####################################################################################
+        # create the returned dataframe 
+        new_dict = {team: team.schedule_outline for team in self.allteams}
+        return pd.DataFrame.from_dict(new_dict, orient='index')
 
     def add_game_to_teams(self, week: int, home_team: NFLTeam, away_team: NFLTeam) -> None:
         """Accesses the pre-defined object for both teams and adds this matchup to the team objects scheduule
@@ -356,7 +362,6 @@ class NFLSchedule():
             self.schedule[week] = []
         self.schedule[week].append([hometeam, awayteam])
 
-
     def set_real_schedule(self, debug = False) -> None:
         """each week, find out how which teams are eligble to play each other 
 
@@ -373,17 +378,28 @@ class NFLSchedule():
             unique_divisions = set([team.unique_division for team in teams_div_game])
             for div in unique_divisions:
                 div_teams = [team for team in teams_div_game if team.unique_division == div]
+                random.shuffle(div_teams)
                 while div_teams:
-                    random.shuffle(div_teams)
                     home = div_teams.pop()
                     away = div_teams.pop()
                     self.add_game_to_schedule(week = week, hometeam = home, awayteam = away)
 
             # assign in-conference games
             teams_conf_game = [team for team in teams_list if team.schedule_outline[week] == "conf"]
-            for team in teams_conf_game:
-                pass
-            
+            conferences = set([team.conference for team in teams_div_game])
+
+            abcdef = 0
+
+            for conf in conferences:
+                conf_teams = [team for team in teams_conf_game if team.conference == conf]
+                random.shuffle(conf_teams)
+                while conf_teams:
+                    home = conf_teams.pop()
+                    away = conf_teams.pop()
+                    self.add_game_to_schedule(week = week, hometeam = home, awayteam = away)
+
+            abcdef = 0
+                
             # pass over teams with a bye week
             teams_w_bye = [team for team in teams_list if "bye" in team.schedule_outline[week].lower()]
             
@@ -393,17 +409,17 @@ class NFLSchedule():
                 pass
             
 
-            for team in teams_list:
-                if "bye" in team.schedule_outline[week].lower():
-                    if debug:
-                        print(f"{week = }, bye team = {team.mascot}")
+            # for team in teams_list:
+            #     if "bye" in team.schedule_outline[week].lower():
+            #         if debug:
+            #             print(f"{week = }, bye team = {team.mascot}")
 
-                    # team.schedule[week] = "-BYE-"
-                    teams_list.remove(team)
-                if "bye" in team.schedule_outline[week].lower():
-                    pass
-                if "bye" in team.schedule_outline[week].lower():
-                    pass
+            #         # team.schedule[week] = "-BYE-"
+            #         teams_list.remove(team)
+            #     if "bye" in team.schedule_outline[week].lower():
+            #         pass
+            #     if "bye" in team.schedule_outline[week].lower():
+            #         pass
 
             # print(week)
             # self.schedule[week]
