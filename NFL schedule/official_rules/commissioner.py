@@ -81,6 +81,9 @@ class NFLSchedule():
 
         return teams
 
+    def get_teams(self, conf, div):
+        return [team for team in self.allteams if conf.lower() in team.conference.lower() and div.lower() in team.division.lower()]
+
     def weekly_bye_count(self, eligible_weeks):
         # keep randomly creating the number of teeams on bye for each week until there are 32 bye slots
         weekly_bye_count_list = [random.choice([2,4]) for week in eligible_weeks]
