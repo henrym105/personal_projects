@@ -1,4 +1,4 @@
-### This package has been designed to create the NFL schedule according to most of the rules actually used to create the real thing. 
+This package has been designed to create the NFL schedule according to most of the rules actually used to create the real thing. 
 
 source: [Creating the NFL Schedule](https://operations.nfl.com/gameday/nfl-schedule/creating-the-nfl-schedule/)
 
@@ -6,7 +6,7 @@ source: [Creating the NFL Schedule](https://operations.nfl.com/gameday/nfl-sched
 - There are 18 weeks
     - each team has 1 bye week (must be from week 4 to 14)
 - Each team plays 17 games
-    - 6 games are within their division --> play the other 3 teams twice: 1 home, 1 away against each opponent
+    - 6 games are within their division --> each play the other 3 teams twice: 1 home, 1 away 
     - 4 games are against teams from a different division in the same conference (2 home, 2 away)
     - 4 games are against teams from a division in the other coference (2 home, 2 away)
     - 2 games against the rermaining teams in its own conference, based on division ranking from the previous season. 
