@@ -1,30 +1,53 @@
 things to keep track of
 
+for each division:
+1) in_conf divisional matchups
+2) the other 2 i_conf divisions to play
+3) x_conf divisional matchups
+
+for each team
+1) who they need to play
+2) when they need to play each type of game
+3) pair up the type of game with who they play, 
+    - for conf-divisional games, ensure identical matchups dont happen in back-to-back weeks
+
+
+at league level, keep a dictionary of all teams:
+    w/ levels -> conference: division: team
+
+
+
+
 league
-- all 32 teams
 
 conference
-- 
 
 division
-- 6 weeks for in-division games
-- 1 other division in the same conference -> 4 games
-
 
 team
 
 
-
 Bengals 2023:
 
-in division:
-N.n -> [1, 2, 11, 12,16, 18]
+BYE WEEK
+-> 7
 
-same conference, other division:
+DIVISIONAL:
+A.n -> [1, 2, 11, 12, 16, 18]
+
+SAME CONFERENCE DIFFERENT DIVISION (4 games):
+A.s -> [4 (titans), 10 (texans), 13 (jaguars), 14 (colts)]
+
+SAME CONFERENCE, 1 team from each remaining division:
+A.e -> 9 (bills)
+A.w -> 17 (chiefs)
+
+OTHER CONFERENCE ANY 1 DIVISION (4 games):
 N.w -> [3 (rams), 5 (cardinals), 6 (seahawks), 8 (49ers)]
-A.s -> [4 (titans), ]
 
-BYE -> 7
+OTHER CONFERENCE, 1 random team from other 3 DIVs (ideally chosen with similar division rank from last season)
+N.n -> 15 (vikings)
+
 
 
 
