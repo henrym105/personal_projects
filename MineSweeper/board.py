@@ -1,11 +1,17 @@
 from random import sample, choice
 
+class Square():
+    """ a square can either be a bomb, a hint (if next to a bomb), or blank"""
+    def __init__(self, type):
+        self.type = type
+        
+
 class Board():
     def __init__(self, size, m):
         self.size = size
         self.mines = m
         self.mine_locations = []
-        self.grid = [[""]*self.size]*self.size
+        self.grid = [[]*self.size]*self.size
 
     def reset_board(self):
         self.grid = [[0]*self.columns]*self.rows

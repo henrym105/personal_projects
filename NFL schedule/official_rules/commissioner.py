@@ -1,88 +1,204 @@
-from team import NFLTeam
+from team import NFLTeam, Conference, Division, Game
 import numpy as np
 import copy, json, random, time
 import pandas as pd
 
+
 class NFLSchedule():
-    """
-    Holds the master schedule for the NFL Season, optional parameter weeks set to default = 18
-    """
-    def __init__(self, weeks = 18):
-        # self.allteams = all_NFL_teams
-        self.weeks = weeks
-
-        self.allteams = self.create_teams()
-        self.teams_dict = {team.mascot: team for team in self.allteams}
-        self.AFC = [ team for team in self.allteams if "AFC" in team.conference.upper() ]
-        self.NFC = [ team for team in self.allteams if "NFC" in team.conference.upper() ]
-        self.teams_played_other_conference = []
-        self.schedule = {i: None for i in range(1, weeks+1)}
-
-    def __str__(self):
-        # return json.dumps(self.schedule, indent=4)
-        return self.allteams
-
-    def create_teams(self) -> list:
-        """ Returns a list of the 32 NFLTeam objects, one for each team"""
-
-        # AFC East Teams
-        patriots = NFLTeam("New England", "Patriots", "AFC", "East")
-        bills = NFLTeam("Buffalo", "Bills", "AFC", "East")
-        dolphins = NFLTeam("Miami", "Dolphins", "AFC", "East")
-        jets = NFLTeam("New York", "Jets", "AFC", "East")
+    """ Holds the master schedule for the NFL Season """
+    def __init__(self):
+        self.schedule = {f"week_{i}": None for i in range(1, 19)}
 
         # AFC North Teams
-        ravens = NFLTeam("Baltimore", "Ravens", "AFC", "North")
-        steelers = NFLTeam("Pittsburgh", "Steelers", "AFC", "North")
-        browns = NFLTeam("Cleveland", "Browns", "AFC", "North")
-        bengals = NFLTeam("Cincinnati", "Bengals", "AFC", "North")
+        self.bengals = NFLTeam("Cincinnati", "Bengals", "AFC", "North")
+        self.ravens = NFLTeam("Baltimore", "Ravens", "AFC", "North")
+        self.steelers = NFLTeam("Pittsburgh", "Steelers", "AFC", "North")
+        self.browns = NFLTeam("Cleveland", "Browns", "AFC", "North")
 
         # AFC South Teams
-        texans = NFLTeam("Houston", "Texans", "AFC", "South")
-        colts = NFLTeam("Indianapolis", "Colts", "AFC", "South")
-        titans = NFLTeam("Tennessee", "Titans", "AFC", "South")
-        jaguars = NFLTeam("Jacksonville", "Jaguars", "AFC", "South")
+        self.texans = NFLTeam("Houston", "Texans", "AFC", "South")
+        self.colts = NFLTeam("Indianapolis", "Colts", "AFC", "South")
+        self.titans = NFLTeam("Tennessee", "Titans", "AFC", "South")
+        self.jaguars = NFLTeam("Jacksonville", "Jaguars", "AFC", "South")
+
+        # AFC East Teams
+        self.patriots = NFLTeam("New England", "Patriots", "AFC", "East")
+        self.bills = NFLTeam("Buffalo", "Bills", "AFC", "East")
+        self.dolphins = NFLTeam("Miami", "Dolphins", "AFC", "East")
+        self.jets = NFLTeam("New York", "Jets", "AFC", "East")
 
         # AFC West Teams
-        chiefs = NFLTeam("Kansas City", "Chiefs", "AFC", "West")
-        broncos = NFLTeam("Denver", "Broncos", "AFC", "West")
-        raiders = NFLTeam("Las Vegas", "Raiders", "AFC", "West")
-        chargers = NFLTeam("Los Angeles", "Chargers", "AFC", "West")
-
-        # NFC East Teams
-        cowboys = NFLTeam("Dallas", "Cowboys", "NFC", "East")
-        washington = NFLTeam("Washington", "Commanders", "NFC", "East")
-        eagles = NFLTeam("Philadelphia", "Eagles", "NFC", "East")
-        giants = NFLTeam("New York", "Giants", "NFC", "East")
+        self.chiefs = NFLTeam("Kansas City", "Chiefs", "AFC", "West")
+        self.broncos = NFLTeam("Denver", "Broncos", "AFC", "West")
+        self.raiders = NFLTeam("Las Vegas", "Raiders", "AFC", "West")
+        self.chargers = NFLTeam("Los Angeles", "Chargers", "AFC", "West")
 
         # NFC North Teams
-        packers = NFLTeam("Green Bay", "Packers", "NFC", "North")
-        bears = NFLTeam("Chicago", "Bears", "NFC", "North")
-        vikings = NFLTeam("Minnesota", "Vikings", "NFC", "North")
-        lions = NFLTeam("Detroit", "Lions", "NFC", "North")
+        self.packers = NFLTeam("Green Bay", "Packers", "NFC", "North")
+        self.bears = NFLTeam("Chicago", "Bears", "NFC", "North")
+        self.vikings = NFLTeam("Minnesota", "Vikings", "NFC", "North")
+        self.lions = NFLTeam("Detroit", "Lions", "NFC", "North")
 
         # NFC South Teams
-        buccaneers = NFLTeam("Tampa Bay", "Buccaneers", "NFC", "South")
-        saints = NFLTeam("New Orleans", "Saints", "NFC", "South")
-        panthers = NFLTeam("Carolina", "Panthers", "NFC", "South")
-        falcons = NFLTeam("Atlanta", "Falcons", "NFC", "South")
+        self.buccaneers = NFLTeam("Tampa Bay", "Buccaneers", "NFC", "South")
+        self.saints = NFLTeam("New Orleans", "Saints", "NFC", "South")
+        self.panthers = NFLTeam("Carolina", "Panthers", "NFC", "South")
+        self.falcons = NFLTeam("Atlanta", "Falcons", "NFC", "South")
+
+        # NFC East Teams
+        self.cowboys = NFLTeam("Dallas", "Cowboys", "NFC", "East")
+        self.washington = NFLTeam("Washington", "Commanders", "NFC", "East")
+        self.eagles = NFLTeam("Philadelphia", "Eagles", "NFC", "East")
+        self.giants = NFLTeam("New York", "Giants", "NFC", "East")
 
         # NFC West Teams
-        seahawks = NFLTeam("Seattle", "Seahawks", "NFC", "West")
-        rams = NFLTeam("Los Angeles", "Rams", "NFC", "West")
-        cardinals = NFLTeam("Arizon", "Cardinals", "NFC", "West")
-        sf49ers = NFLTeam("San Francisco", "49ers", "NFC", "West")
+        self.seahawks = NFLTeam("Seattle", "Seahawks", "NFC", "West")
+        self.rams = NFLTeam("Los Angeles", "Rams", "NFC", "West")
+        self.cardinals = NFLTeam("Arizon", "Cardinals", "NFC", "West")
+        self.sf49ers = NFLTeam("San Francisco", "49ers", "NFC", "West")
 
         # Create a list of all 32 NFLTeam objects
-        teams = [patriots, bills, dolphins, jets, ravens, steelers, browns, bengals,
-                texans, colts, titans, jaguars,chiefs, broncos, raiders, chargers,
-                cowboys, washington, eagles, giants,packers, bears, vikings, lions,
-                buccaneers, saints, panthers, falcons, seahawks, rams, cardinals, sf49ers]
+        self.allteams = [self.bengals, self.ravens, self.steelers, self.browns, 
+                        self.texans, self.colts, self.titans, self.jaguars,
+                        self.patriots, self.bills, self.dolphins, self.jets,
+                        self.chiefs, self.broncos, self.raiders, self.chargers,
+                        self.packers, self.bears, self.vikings, self.lions,
+                        self.buccaneers, self.saints, self.panthers, self.falcons,
+                        self.cowboys, self.washington, self.eagles, self.giants,
+                        self.seahawks, self.rams, self.cardinals, self.sf49ers]
 
-        return teams
+        # create 1 NFLTeam object to represent a Bye week
+        # self.bye_team = NFLTeam("BYE", "BYE", None, None)
+        # self.bye_team = NFLTeam(city=None, mascot=None, conference=None, division=None)
 
-    def get_teams(self, conf, div):
-        return [team for team in self.allteams if conf.lower() in team.conference.lower() and div.lower() in team.division.lower()]
+        # create Division objects (only accessible through the self.conferece.division notation)
+        afc_n = Division("AFC", "North", [self.ravens, self.steelers, self.browns, self.bengals])
+        afc_s = Division("AFC", "South", [self.texans, self.colts, self.titans, self.jaguars])
+        afc_e = Division("AFC", "East",  [self.patriots, self.bills, self.dolphins, self.jets])
+        afc_w = Division("AFC", "West",  [self.chiefs, self.broncos, self.raiders, self.chargers])
+        nfc_n = Division("NFC", "North", [self.packers, self.bears, self.vikings, self.lions])
+        nfc_s = Division("NFC", "South", [self.buccaneers, self.saints, self.panthers, self.falcons])
+        nfc_e = Division("NFC", "East",  [self.cowboys, self.washington, self.eagles, self.giants])
+        nfc_w = Division("NFC", "West",  [self.seahawks, self.rams, self.cardinals, self.sf49ers])
+
+        # create confrence attributes
+        self.afc = Conference("AFC", afc_n, afc_s, afc_e, afc_w)
+        self.nfc = Conference("NFC", nfc_n, nfc_s, nfc_e, nfc_w)
+        self.all_conferences = (self.afc, self.nfc)
+
+        # create a list of all the divisions across the two conferences
+        self.all_divisions = (self.afc.north, self.afc.south, self.afc.east, self.afc.west, 
+                                 self.nfc.north, self.nfc.south, self.nfc.east, self.nfc.west)
+
+    def create_teams(self) -> list:
+        return
+        # """ Returns a list of the 32 NFLTeam objects, one for each team"""
+        # # AFC North Teams
+        # ravens = NFLTeam("Baltimore", "Ravens", "AFC", "North")
+        # steelers = NFLTeam("Pittsburgh", "Steelers", "AFC", "North")
+        # browns = NFLTeam("Cleveland", "Browns", "AFC", "North")
+        # bengals = NFLTeam("Cincinnati", "Bengals", "AFC", "North")
+
+        # # AFC South Teams
+        # texans = NFLTeam("Houston", "Texans", "AFC", "South")
+        # colts = NFLTeam("Indianapolis", "Colts", "AFC", "South")
+        # titans = NFLTeam("Tennessee", "Titans", "AFC", "South")
+        # jaguars = NFLTeam("Jacksonville", "Jaguars", "AFC", "South")
+
+        # # AFC East Teams
+        # patriots = NFLTeam("New England", "Patriots", "AFC", "East")
+        # bills = NFLTeam("Buffalo", "Bills", "AFC", "East")
+        # dolphins = NFLTeam("Miami", "Dolphins", "AFC", "East")
+        # jets = NFLTeam("New York", "Jets", "AFC", "East")
+
+        # # AFC West Teams
+        # chiefs = NFLTeam("Kansas City", "Chiefs", "AFC", "West")
+        # broncos = NFLTeam("Denver", "Broncos", "AFC", "West")
+        # raiders = NFLTeam("Las Vegas", "Raiders", "AFC", "West")
+        # chargers = NFLTeam("Los Angeles", "Chargers", "AFC", "West")
+
+        # # NFC North Teams
+        # packers = NFLTeam("Green Bay", "Packers", "NFC", "North")
+        # bears = NFLTeam("Chicago", "Bears", "NFC", "North")
+        # vikings = NFLTeam("Minnesota", "Vikings", "NFC", "North")
+        # lions = NFLTeam("Detroit", "Lions", "NFC", "North")
+
+        # # NFC South Teams
+        # buccaneers = NFLTeam("Tampa Bay", "Buccaneers", "NFC", "South")
+        # saints = NFLTeam("New Orleans", "Saints", "NFC", "South")
+        # panthers = NFLTeam("Carolina", "Panthers", "NFC", "South")
+        # falcons = NFLTeam("Atlanta", "Falcons", "NFC", "South")
+
+        # # NFC East Teams
+        # cowboys = NFLTeam("Dallas", "Cowboys", "NFC", "East")
+        # washington = NFLTeam("Washington", "Commanders", "NFC", "East")
+        # eagles = NFLTeam("Philadelphia", "Eagles", "NFC", "East")
+        # giants = NFLTeam("New York", "Giants", "NFC", "East")
+
+        # # NFC West Teams
+        # seahawks = NFLTeam("Seattle", "Seahawks", "NFC", "West")
+        # rams = NFLTeam("Los Angeles", "Rams", "NFC", "West")
+        # cardinals = NFLTeam("Arizon", "Cardinals", "NFC", "West")
+        # sf49ers = NFLTeam("San Francisco", "49ers", "NFC", "West")
+
+        # # Create a list of all 32 NFLTeam objects
+        # teams = [patriots, bills, dolphins, jets, ravens, steelers, browns, bengals,
+        #         texans, colts, titans, jaguars,chiefs, broncos, raiders, chargers,
+        #         cowboys, washington, eagles, giants,packers, bears, vikings, lions,
+        #         buccaneers, saints, panthers, falcons, seahawks, rams, cardinals, sf49ers]
+        
+        # # # create Division objects
+        # # afc_n = Division("AFC", "North", [ravens, steelers, browns, bengals])
+        # # afc_s = Division("AFC", "South", [texans, colts, titans, jaguars])
+        # # afc_e = Division("AFC", "East",  [patriots, bills, dolphins, jets])
+        # # afc_w = Division("AFC", "West",  [chiefs, broncos, raiders, chargers])
+        # # nfc_n = Division("NFC", "North", [packers, bears, vikings, lions])
+        # # nfc_s = Division("NFC", "South", [buccaneers, saints, panthers, falcons])
+        # # nfc_e = Division("NFC", "East",  [cowboys, washington, eagles, giants])
+        # # nfc_w = Division("NFC", "West",  [seahawks, rams, cardinals, sf49ers])
+        # # # create Conference objects
+        # # self.afc = Conference("AFC", afc_n, afc_s, afc_e, afc_w)
+        # # self.nfc = Conference("NFC", nfc_n, nfc_s, nfc_e, nfc_w)
+
+        # # create Division objects
+        # self.afc_n = Division("AFC", "North", [ravens, steelers, browns, bengals])
+        # self.afc_s = Division("AFC", "South", [texans, colts, titans, jaguars])
+        # self.afc_e = Division("AFC", "East",  [patriots, bills, dolphins, jets])
+        # self.afc_w = Division("AFC", "West",  [chiefs, broncos, raiders, chargers])
+        # self.nfc_n = Division("NFC", "North", [packers, bears, vikings, lions])
+        # self.nfc_s = Division("NFC", "South", [buccaneers, saints, panthers, falcons])
+        # self.nfc_e = Division("NFC", "East",  [cowboys, washington, eagles, giants])
+        # self.nfc_w = Division("NFC", "West",  [seahawks, rams, cardinals, sf49ers])
+        # self.unique_divisions = (self.afc_n, self.afc_s, self.afc_e, self.afc_w, 
+        #                          self.nfc_n, self.nfc_s, self.nfc_e, self.nfc_w)
+
+        # # create confrence attributes
+        # self.afc = Conference("AFC", self.afc_n, self.afc_s, self.afc_e, self.afc_w)
+        # self.nfc = Conference("NFC", self.nfc_n, self.nfc_s, self.nfc_e, self.nfc_w)
+        # self.conferences = (self.afc, self.nfc)
+
+        # # NOTE: self.afc.north = self.afc_n
+
+        # return teams
+
+    def __str__(self):
+        return self.allteams
+
+    def get_teams(self, conf, div, names = False) -> list:
+        """Returns a list of pointers to the NFLTeam objects in the specified conference and division. To get team names instead, set names = True
+
+        Args:
+            conf (str) a conference, i.e. "AFC", "NFC"
+            div (str): a division, i.e. "north", "south", "east", "west"
+            names (bool, optional): set True to return team names instead of object pointers. Defaults to True.
+
+        Returns:
+            list: _description_
+        """
+        if names:
+            return [team.name for team in self.allteams if conf.lower() in team.conference.lower() and div.lower() in team.division.lower()]
+        else:
+            return [team for team in self.allteams if conf.lower() in team.conference.lower() and div.lower() in team.division.lower()]
 
     def weekly_bye_count(self, eligible_weeks):
         # keep randomly creating the number of teeams on bye for each week until there are 32 bye slots
@@ -166,7 +282,7 @@ class NFLSchedule():
                         
                         # remove that team form the temp list so we don't pick it again
                         AFC_teams.remove(selected_team_a)
-                        # replace the default None value with the weeke_number of their bye
+                        # replace the default None value with the week_number of their bye
                         bye_list[selected_team_a] = week_num
 
                         """choose NFC team(s)"""
@@ -248,93 +364,141 @@ class NFLSchedule():
             self.schedule[week] = []
         self.schedule[week].append([hometeam, awayteam])
 
-    # def non_consecutive_random_choice(self, options, size=6) -> list:
-    #     # Initialize an empty list to store the non-consecutive choices
-    #     choices = []
-    #     off_limits = []
-
-    #     while len(choices) < size:
-    #         # Randomly sample an index from the list of options
-    #         index = np.random.choice(options)
-    #         h=0
-    #         # If the choices list is empty or the sampled index is not consecutive to the last choice, add it to the choices
-    #         # if (len(choices) == 0) or index != choices[-1] + 1:
-    #         if index not in off_limits:
-    #             choices.append(index)
-    #             off_limits.append([index-1, index, index+1])
-
-    #     # Retrieve the corresponding elements from the list of options
-    #     result = sorted([options[i] for i in choices])
-
-    #     return result
-    
     def set_schedule_outline(self, debug = False) -> None:
         """ For each division, set aside 6 weeks for divisional games. add those 6 weeks to each teams sheduule outline
             Then add each team's bye week, continue doing until none of the bye weeks overlap with each teams weeks reserved for divisional games 
         """
+        
+        ####################################################################################
+        # (d) 
+        # add the 6 divisional games to the  6 weeks for each division to play against themselves
+        for conf in self.all_conferences:
+            for div in conf.divisions:
+                for team in div.allteams:
+                    opps = [opp for opp in div.allteams if opp != team]
+                    team.opponents.extend(opps*2)
+                    team.rival_d6 = div
 
-        """ 
-            !!! ISSUE !!! 
-            no more than 2 of the 4 divisons in each conference can have divisional games per week.
-        """
+        # remove temp variables from namespace to help with debugging
+        del conf, div, team, opps
 
         ####################################################################################
+        # (icd) 
+        # For each division, choose a division from the same conference that they will play against
+        # __________________________________________________________________________________
+        
+        # do each loop within each conference
+        for conf in self.all_conferences:
+            # Get the 4 divisions in that conference and shuffle the order
+            divs = conf.divisions.copy()
+            random.shuffle(divs)
+
+            # after random shuffling, first two divisions and last 2 divisions play each other in xcd games
+            for icd_pair in (divs[:2], divs[2:]):
+                div1 = icd_pair[0]
+                div2 = icd_pair[1]
+
+                # for teams in both divisions, add the teams from the other division to this team's list of opponents
+                for team in div1.allteams:
+                    team.opponents.extend(div2.allteams)
+                    team.rival_icd4 = div2 
+                for team in div2.allteams:
+                    team.opponents.extend(div1.allteams)
+                    team.rival_icd4 = div1
+
+        # remove temp variables from namespace to help with debugging
+        del conf, divs, team, div1, div2, icd_pair
+
+        ####################################################################################
+        # (xcd)
+        # For each division, choose a division from the other conference that they will play against
+        # for now, set it so that each team plays the same n/s/e/w from the other conference (i.e. AFC North plays NFC North...)
+        # __________________________________________________________________________________
+
+        # create a copy of the divisions in the other conference so that we can pop items from the list and avoid duplicate assignments
+        xc_divs_copy = self.nfc.divisions.copy()
+        random.shuffle(xc_divs_copy)
+        
+        for afc_div in self.afc.divisions:
+            # pop one division from the other conference's div list, assign it as the xcd attribute for the AFC division's teams and vice versa.
+            chosen_nfc_div = xc_divs_copy.pop()
+
+            # assign the rival xc division for all 4 teams in the NFC division
+            for team in chosen_nfc_div.allteams:
+                team.rival_xcd4 = afc_div
+                # add those 4 to the teams opponents list
+                team.opponents.extend(team.rival_xcd4.allteams)
+
+            # assign the rival xc division for all 4 teams in the AFC division
+            for team in afc_div.allteams:
+                team.rival_xcd4 = chosen_nfc_div
+                # add those 4 to the teams opponents list
+                team.opponents.extend(team.rival_xcd4.allteams)
+
+        # for team in self.allteams:
+        #     print(f"{team} -> {team.rival_xcd4} === {team.opponents}")
+        del xc_divs_copy, afc_div, chosen_nfc_div, team
+
+        ####################################################################################
+        # (ic)
+        # Get 2 new random teams from its own conference to play
+        # in future, this should be changed to choose teams based on 
+        # __________________________________________________________________________________
+
+
+        for conf in self.all_conferences:
+            for div in conf.divisions:
+                for team in div.allteams:
+                    while len(team.opponents) < 16:
+                        available_divs = [div for div in conf.divisions if div not in [team.rival_d6, team.rival_icd4, team.rival_ic2]]
+                        # if team.rival_ic2 == []:
+                        #     team.rival_ic2 = available_divs
+                        # elif len(available_divs) == 1:
+                        #     team.rival_ic2.append(available_divs)
+
+                        team.rival_ic2.append(available_divs[0])
+                        new_opp = random.choice(available_divs[0].allteams)
+                        team.opponents.append(new_opp)                       
+
+                        if team not in new_opp.opponents:
+                            new_opp.opponents.append(team)
+                            new_opp.rival_ic2.append(div)
+
+            h=0
+
+
+
+
+            # for div in conf.divisions:
+            #     for i in range(len(div.allteams)):
+            #         team1 = div.allteams[i]
+
+            #         # for each team in this division, identify the other 2 divisions in their conference that they haven't seen yet
+            #         available_divs = [div for div in conf.divisions if div not in (team1.rival_d6, team1.rival_icd4)]
+            #         team1.rival_ic2 = available_divs
+
+            #         for other_div in available_divs:
+            #             # choose one team from each of the 2 rival divisions. 
+            #             new_opp = other_div.allteams[i]
+            #             team1.opponents.append(new_opp)
+            #             new_opp.opponents.append(team1)
+
+            #             h=0
+
+
+        ####################################################################################
+        # xcd1
         # Establish 6 weeks for each division to play against themselves.
-        # currently excluding week 14 (to ensure we can always have enough teams eligible for a bye week)
-        div_eligible_weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13] + [16,17,18]
-        # unique_divisions = set([team.unique_division for team in self.allteams])
-        unique_divisions = set([team.division for team in self.allteams])
+        # __________________________________________________________________________________
 
 
-        for div in unique_divisions:
-            div_teams = [t for t in self.allteams if t.division == div]
-            divisional_game_weeks = sorted(np.random.choice(div_eligible_weeks, size = 6, replace = False))
-            # divisional_game_weeks = self.non_consecutive_random_choice(div_eligible_weeks, 6)
-            # for team in [t for t in self.allteams if t.unique_division == div]:
-            henry=0
-            for team in div_teams:
-                for week_num in divisional_game_weeks:
-                    team.schedule_outline[week_num] = "d"
 
-        print("6 divisional weeks assigned")
 
-        ####################################################################################
-        # Set up 1 bye week for all teams:
-        x, cutoff = self.assign_bye_weeks(debug)
-        if x > cutoff:
-            print("FAIL")
-        print("1 bye week assigned")
 
-        ####################################################################################
-        # Reserve one week for cross-conference games
-        open_weeks = list(range(1,19))
-        for team in self.allteams:
-            for week in open_weeks:
-                # if a team has something scheduled that week, remove it from the options
-                if team.schedule_outline[week] is not None:
-                    open_weeks.remove(week)
-        if debug:
-            print(f"{open_weeks = }")
 
-        ####################################################################################
-        # Reserve the earliest open week for in-conference games
-        xconf_week = min(open_weeks)
-        for team in self.allteams:
-            team.schedule_outline[xconf_week] = "XC"
-        print("1 cross-conference week assigned")
 
-        ####################################################################################
-        # designate the remaining weeks as random conference games
-        for team in self.allteams:
-            for week_num in team.schedule_outline.keys():
-                if team.schedule_outline[week_num] == None:
-                    team.schedule_outline[week_num] = "conf"
-        print("remaining weeks set as non-divisional conference games")
 
-        ####################################################################################
-        # create the returned dataframe 
-        new_dict = {team: team.schedule_outline for team in self.allteams}
-        return pd.DataFrame.from_dict(new_dict, orient='index')
+        return 
 
     def set_real_schedule(self, debug = False) -> None:
         """each week, find out how which teams are eligble to play each other 
@@ -373,25 +537,10 @@ class NFLSchedule():
             abcdef = 0
                 
             # pass over teams with a bye week
-            teams_w_bye = [team for team in teams_list if "bye" in team.schedule_outline[week].lower()]
+            teams_w_bye = [team for team in teams_list if "b" in team.schedule_outline[week].lower()]
             
             # assign cross-conference games
             teams_xc_game = [team for team in teams_list if team.schedule_outline[week] == "XC"]
             for team in teams_xc_game:
                 pass
             
-
-            # for team in teams_list:
-            #     if "bye" in team.schedule_outline[week].lower():
-            #         if debug:
-            #             print(f"{week = }, bye team = {team.mascot}")
-
-            #         # team.schedule[week] = "-BYE-"
-            #         teams_list.remove(team)
-            #     if "bye" in team.schedule_outline[week].lower():
-            #         pass
-            #     if "bye" in team.schedule_outline[week].lower():
-            #         pass
-
-            # print(week)
-            # self.schedule[week]

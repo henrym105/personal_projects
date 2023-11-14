@@ -38,15 +38,28 @@ A.n -> [1, 2, 11, 12, 16, 18]
 SAME CONFERENCE DIFFERENT DIVISION (4 games):
 A.s -> [4 (titans), 10 (texans), 13 (jaguars), 14 (colts)]
 
-SAME CONFERENCE, 1 team from each remaining division:
+SAME CONFERENCE, 1 team from each of the 2 divisions you havent faced yet:
 A.e -> 9 (bills)
 A.w -> 17 (chiefs)
 
 OTHER CONFERENCE ANY 1 DIVISION (4 games):
 N.w -> [3 (rams), 5 (cardinals), 6 (seahawks), 8 (49ers)]
 
-OTHER CONFERENCE, 1 random team from other 3 DIVs (ideally chosen with similar division rank from last season)
+OTHER CONFERENCE, 1 random team from any of the other 3 DIVs (ideally chosen with similar division rank from last season)
 N.n -> 15 (vikings)
+
+
+
+within each conference:
+look at each team
+while that team has len(self.opponents) < 16:
+- find 1 team in each of the 2 conferences who they havent played yet.
+- can do this by randomly selecting from all teams in conference, then checking if that team is in self.opponents
+    - if already played, select another team
+
+
+
+
 
 
 
